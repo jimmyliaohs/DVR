@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <com.cwt.liaohs.recorder.CamearView
+        android:id="@+id/surfaceView"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+    <!--android:layerType="software"-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#666666"
+        android:orientation="horizontal" >
+
+        <CheckBox
+            android:id="@+id/vedio_lock"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/record_vedio_lock_bg"
+            android:button="@null" />
+
+        <Button
+            android:id="@+id/tack_pic"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/record_tack_pic_bg" />
+        <CheckBox
+            android:id="@+id/vedio_switch"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/record_vedio_switch_bg"
+            android:button="@null" />
+        <Button
+            android:id="@+id/switch_camera"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_switch" />
+        <CheckBox
+            android:id="@+id/voice_switch"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/record_voice_switch_bg"
+            android:button="@null" />
+        <Button
+            android:id="@+id/vedio_setting"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@drawable/record_vodio_setting_bg" />
+
+    </LinearLayout>
+
+</LinearLayout>
