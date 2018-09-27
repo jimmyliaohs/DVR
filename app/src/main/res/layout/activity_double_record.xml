@@ -1,17 +1,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context=".MainActivity" >
-
-    <com.cwt.liaohs.recorder.CamearView
-        android:id="@+id/surfaceView"
+    tools:context=".DoubleRecordActivity"
+    >
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        />
-    <!--android:layerType="software"-->
+        android:layout_weight="1">
+        <TextureView
+            android:id="@+id/textureview_front"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        <TextureView
+            android:id="@+id/textureview_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true"
+            />
+        <TextView
+            android:id="@+id/tv_start_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="#FF0000"
+            android:drawablePadding="5dp"
+            android:layout_marginLeft="10dp"
+            style="@style/Base.Widget.AppCompat.ActionButton"
+            android:visibility="gone"
+            />
+        <RelativeLayout
+            android:id="@+id/unloadpanel"
+            android:layout_width="480dp"
+            android:layout_height="300dp"
+            android:background="@drawable/shape_upload"
+            android:layout_gravity="bottom|center_horizontal"
+            android:visibility="invisible"
+            >
+
+            <ImageView
+                android:id="@+id/pic"
+                android:layout_width="450dp"
+                android:layout_height="240dp"
+                android:layout_centerInParent="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="照片存储中..."
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/pic"
+                />
+        </RelativeLayout>
+    </FrameLayout>
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="48dp"

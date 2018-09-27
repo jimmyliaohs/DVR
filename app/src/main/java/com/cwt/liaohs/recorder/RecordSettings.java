@@ -35,28 +35,75 @@ public class RecordSettings {
         return getSharedPref().getInt(key, defaultValue);
     }
 
-    public static void setPreview(boolean value) {
-        setValue("is_previewing", value);
+    public static void setVoiceDisable(boolean value) {
+        setValue("disable_voice", value);
     }
 
-    public static boolean isPreview() {
-        return getBoolean("is_previewing", false);
+    public static boolean isVoiceDisable() {
+        return getBoolean("disable_voice", false);
     }
 
-    public static void setRecord(boolean value) {
-        setValue("is_recording", value);
-    }
-
-    public static boolean isRecord() {
-        return getBoolean("is_recording", false);
-    }
-
-
-    public static void setLock(int value) {
+    public static void setLock(boolean value) {
         setValue("is_lock", value);
     }
 
-    public static int getLock() {
-        return getInt("is_lock", 0);
+    public static boolean isLock() {
+        return getBoolean("is_lock", false);
+    }
+
+    public static void setRecordInterval(int value) {
+        setValue("record_interval", value);
+    }
+
+    public static int getRecordInterval() {
+        return getInt("record_interval", 1);
+    }
+
+    public static void setRecordBitRate(int value) {
+        setValue("record_bitrate", value);
+    }
+
+    public static int getRecordBitRate() {
+        return getInt("record_bitrate", 1);
+    }
+
+    public static void setCrashSenseLevel(int value) {
+        setValue("crash_sense_level", value);
+    }
+
+    public static int getCrashSenseLevel() {
+        return getInt("crash_sense_level", 8);
+    }
+
+    public static boolean isCrashToggle(){
+        return getBoolean("crash_toggle", true);
+    }
+
+    public static void setCrashToggle(boolean value){
+        setValue("crash_toggle", value);
+    }
+
+    public static boolean isFrontCrashedOn(){
+        return getBoolean("is_front_crashed", false);
+    }
+
+    public static void setFrontCrashed(boolean value){
+        setValue("is_front_crashed", value);
+    }
+
+    public static boolean isBackCrashedOn(){
+        return getBoolean("is_back_crashed", false);
+    }
+
+    public static void setBackCrashed(boolean value){
+        setValue("is_back_crashed", value);
+    }
+
+    public static void setQuality720p(boolean value){
+        setValue("is_quality_720p", value);
+    }
+
+    public static boolean isQuality720p(){
+        return getBoolean("is_quality_720p", true);
     }
 }

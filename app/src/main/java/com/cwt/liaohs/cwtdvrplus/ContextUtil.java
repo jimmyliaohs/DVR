@@ -1,54 +1,92 @@
 package com.cwt.liaohs.cwtdvrplus;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Application;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cwt.liaohs.bus.SdcardNotMounted;
+import com.cwt.liaohs.bus.StartRecord;
+import com.cwt.liaohs.bus.StopRecord;
+import com.cwt.liaohs.recorder.CrashGsensorManager;
+import com.cwt.liaohs.recorder.RecordDatabaseManager;
+import com.cwt.liaohs.recorder.RecordDbHelper;
+import com.cwt.liaohs.state.RecordStateManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.ThreadEnforcer;
 
 public class ContextUtil extends Application {
     private static ContextUtil contextUtil;
+    public long mRecordingBegin;
+    public boolean isRecording = false;
+    public boolean isDriveAfterCrash = false;
+    public boolean isSdcardRemove = false;
+    public RecordStateManager frontStateManager = null;
+    public RecordStateManager backStateManager = null;
+
+    public static final int BITRATE_LOW = 8 * 1024 * 1000;
+    public static final int BITRATE_MID = 10 * 1024 * 1000;
+    public static final int BITRATE_HIG = 12 * 1024 * 1000;
+
+    public static final int CLASH_LEVEL_LOW = 8;
+    public static final int CLASH_LEVEL_MID = 4;
+    public static final int CLASH_LEVEL_HIG = 2;
+
+    public static final Bus BUS = new Bus(ThreadEnforcer.ANY);
+
+    public static ContextUtil getInstance() {
+        return contextUtil;
+    }
 
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
         super.onCreate();
         contextUtil = this;
+        BUS.register(this);
+        CrashGsensorManager.getInstance().startGSensor();
+        RecordDatabaseManager.initializeInstance(RecordDbHelper.getInstance(this));
     }
 
-    public static ContextUtil getInstance() {
-        return contextUtil;
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        BUS.unregister(this);
+        CrashGsensorManager.getInstance().stopGSensor();
     }
 
-    private static final String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-
-    private static List<String> mPermissionList = new ArrayList<>();
-
-
-    public static void requestPermissions(Activity activity) {
-        if (activity == null) {
-            return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mPermissionList.clear();
-            for (int i = 0; i < permissions.length; i++) {
-                if (ContextCompat.checkSelfPermission(activity, permissions[i]) != PackageManager.PERMISSION_GRANTED) {
-                    mPermissionList.add(permissions[i]);
-                }
-            }
-
-            if (!mPermissionList.isEmpty()) {
-                String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
-                ActivityCompat.requestPermissions(activity, permissions, 1);
-            }
-
+    public void setRecordStateManager(RecordStateManager stateManager,boolean isFront){
+        if(isFront){
+            frontStateManager = stateManager;
+        }else{
+            backStateManager = stateManager;
         }
     }
+
+    public RecordStateManager getStateManager(boolean isFront){
+        if(isFront){
+            return frontStateManager;
+        }else{
+            return backStateManager;
+        }
+    }
+
+    @Subscribe
+    public void onStartRecord(StartRecord startRecord) {
+        isRecording = true;
+        mRecordingBegin = System.currentTimeMillis();
+    }
+
+    @Subscribe
+    public void onStopRecord(StopRecord stopRecord) {
+        isRecording = false;
+        mRecordingBegin = 0;
+    }
+
+    @Subscribe
+    public void onSdcardNotMounted(SdcardNotMounted sdcardNotMounted) {
+        isRecording = false;
+        mRecordingBegin = 0;
+    }
+
 }

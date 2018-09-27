@@ -1,0 +1,436 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".SettingsActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#6b6969">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="设置"
+            android:textColor="#ffff"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/settings_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/selector_back_bg" />
+    </RelativeLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/setting_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffff"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffff"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="行车事故记录"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                    <LinearLayout
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_centerInParent="true"
+                        >
+                        <com.cwt.liaohs.view.SwitchButton
+                            android:id="@+id/switch_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            app:sb_show_indicator="false"
+                            />
+                        <TextView
+                            android:id="@+id/tip"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Tips:为了您的行车安全，建议你长期开启此功能。"
+                            android:textColor="#ff282d30"
+                            android:textSize="16sp"
+                            android:gravity="left|center_vertical"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="15dp"
+                            />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical"
+                android:visibility="gone"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="双录设置"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RadioGroup
+                        android:id="@+id/radio_double_record_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:checkedButton="@+id/double_record_front"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/double_record_front"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="仅前录"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+
+                        <RadioButton
+                            android:id="@+id/double_record_double"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="同时录"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="录像时间设置"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RadioGroup
+                        android:id="@+id/radio_interval_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:checkedButton="@+id/radio_interval_1"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio_interval_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="1分钟"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_interval_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="2分钟"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_interval_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="5分钟"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical"
+                android:visibility="gone"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="视频比特率设置"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RadioGroup
+                        android:id="@+id/radio_bitrate_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:checkedButton="@+id/radio_bitrate_low"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio_bitrate_low"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="低"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_bitrate_mid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="中"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_bitrate_high"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="高"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="视频质量设置"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RadioGroup
+                        android:id="@+id/radio_quality_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio_quality_720p"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="720p"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+
+                        <RadioButton
+                            android:id="@+id/radio_quality_1080p"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="1080p"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+                </RelativeLayout>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:background="@drawable/settings_item_bg"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="碰撞检测灵敏度"
+                    android:textColor="#ff282d30"
+                    android:textSize="30dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#c2afaf"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RadioGroup
+                        android:id="@+id/radio_crash_sense_setting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:checkedButton="@+id/radio_crash_sense_low"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/radio_crash_sense_low"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="低"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_crash_sense_mid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="中"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                        <RadioButton
+                            android:id="@+id/radio_crash_sense_high"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:paddingLeft="10dp"
+                            android:text="高"
+                            android:textColor="#ff1b1b1b"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</LinearLayout>
