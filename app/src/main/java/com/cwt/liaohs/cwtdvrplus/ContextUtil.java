@@ -10,6 +10,7 @@ import com.cwt.liaohs.bus.StopRecord;
 import com.cwt.liaohs.recorder.CrashGsensorManager;
 import com.cwt.liaohs.recorder.RecordDatabaseManager;
 import com.cwt.liaohs.recorder.RecordDbHelper;
+import com.cwt.liaohs.recorder.RecordSettings;
 import com.cwt.liaohs.state.RecordStateManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -20,6 +21,7 @@ public class ContextUtil extends Application {
     public long mRecordingBegin;
     public boolean isRecording = false;
     public boolean isDriveAfterCrash = false;
+    public boolean isDriveAfterWechatVedio = false;
     public boolean isSdcardRemove = false;
     public RecordStateManager frontStateManager = null;
     public RecordStateManager backStateManager = null;

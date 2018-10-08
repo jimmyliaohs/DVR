@@ -1,5 +1,7 @@
 package com.cwt.liaohs.recorder;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.os.Handler;
@@ -13,6 +15,9 @@ import com.cwt.liaohs.cwtdvrplus.ContextUtil;
 import com.cwt.liaohs.state.IdleState;
 import com.cwt.liaohs.state.RecordStateManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static com.cwt.liaohs.cwtdvrplus.ContextUtil.BUS;
@@ -26,7 +31,6 @@ public class RecordManager implements Runnable {
     public MediaRecorder mediaRecorder;
     public Camera mCamera;
     public TextureView mTextureView;
-    public String currentVedioPath;
     public int cameraId;
 
 
@@ -95,6 +99,85 @@ public class RecordManager implements Runnable {
         return mCamera;
     }
 
+    public void takePic(final OnPicTakeListener onPicTakeListener){
+
+        if(onPicTakeListener == null){
+            return;
+        }
+
+        if(mCamera == null){
+            mCamera = getCameraInstance();
+            if(mCamera == null){
+                onPicTakeListener.onPicTakeFinish(null);
+            }
+            return;
+        }
+
+        mCamera.takePicture(null, null, new Camera.PictureCallback() {
+
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+                if(camera != null){
+                    camera.startPreview();
+                }
+
+                if (data == null) {
+                    onPicTakeListener.onPicTakeFinish(null);
+                    return;
+                }
+
+                byte[] bytes = compressPic(data);
+
+                if(bytes != null){
+                    currentPicPath = savePic(bytes);
+                    onPicTakeListener.onPicTakeFinish(bytes);
+                }else{
+                    onPicTakeListener.onPicTakeFinish(null);
+                }
+            }
+        });
+
+    }
+
+    private byte[] compressPic(byte[] data){
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bmp, 800, 480, true);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bmp.recycle();
+        scaledBitmap.recycle();
+        return bos.toByteArray();
+    }
+
+    private String savePic(byte[] data) {
+        if (data == null) {
+            return null;
+        }
+        FileOutputStream out;
+        String picPath;
+        try {
+            picPath = RecordStorage.getCurrentPicPath();
+            out = new FileOutputStream(new File(picPath));
+            out.write(data);
+            out.flush();
+            out.close();
+            return picPath;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String currentVedioPath = null;
+    public String getCurrentVedioPath(){
+        return currentVedioPath;
+    }
+
+    private String currentPicPath = null;
+    public String getCurrentPicPath(){
+        return currentPicPath;
+    }
+
     public void startPreview() {
         if (mCamera != null) {
 
@@ -159,7 +242,6 @@ public class RecordManager implements Runnable {
         }
 
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-//        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_2_TS);
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
 
@@ -178,14 +260,6 @@ public class RecordManager implements Runnable {
             mediaRecorder.setVideoSize(1920, 1088);//1080p
             mediaRecorder.setVideoEncodingBitRate(4500000);
         }
-
-//        if (Camera.getNumberOfCameras() == 2) {
-//            mediaRecorder.setVideoSize(1280, 720);//720p
-//            mediaRecorder.setVideoEncodingBitRate(9000000);
-//        } else {
-//            mediaRecorder.setVideoSize(1920, 1088);//1080p
-//            mediaRecorder.setVideoEncodingBitRate(4500000);
-//        }
 
         mediaRecorder.setVideoFrameRate(30/*frameRate*/);
 
@@ -227,7 +301,11 @@ public class RecordManager implements Runnable {
         }
         isRecording = true;
         this.onRecordFinishListener = onRecordFinishListener;
-        mainHandler.postDelayed(this, RecordSettings.getRecordInterval() * 60 * 1000 + 1000);
+        if(RecordSettings.isBackWechatVedioOn()){
+            mainHandler.postDelayed(this, 15 * 1000 + 1000);
+        }else{
+            mainHandler.postDelayed(this, RecordSettings.getRecordInterval() * 60 * 1000 + 1000);
+        }
 
     }
 
@@ -268,7 +346,7 @@ public class RecordManager implements Runnable {
     private static final int typeBack = 1;
     public void startRecordTask(final OnRecordFinishListener onRecordFinishListener) {
         try {
-            RecordStorage.checkSdcard(new ISdcardCheckoutListener() {
+            RecordStorage.checkSdcard(new OnSdcardCheckoutListener() {
                 @Override
                 public void sdcardNoMounted() {
                     if (cameraId == frontCameraId) {

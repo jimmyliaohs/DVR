@@ -24,7 +24,7 @@
             android:id="@+id/tv_start_record"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:00"
+            android:text="@string/record_time"
             android:textColor="#FF0000"
             android:drawablePadding="5dp"
             android:layout_marginLeft="10dp"
@@ -50,7 +50,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="照片存储中..."
+                android:text="@string/save_pic"
                 android:textColor="#000000"
                 android:textSize="15sp"
                 android:layout_centerHorizontal="true"

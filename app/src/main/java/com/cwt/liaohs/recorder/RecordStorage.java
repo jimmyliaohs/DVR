@@ -2,7 +2,6 @@ package com.cwt.liaohs.recorder;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
 import android.text.TextUtils;
@@ -219,7 +218,7 @@ public class RecordStorage {
     /**
      * 检查存储情况
      */
-    public static void checkSdcard(ISdcardCheckoutListener listener) throws Exception {
+    public static void checkSdcard(OnSdcardCheckoutListener listener) throws Exception {
 
         if (listener == null) {
             throw new Exception("onSdcardCheckListener is null");

@@ -37,19 +37,17 @@ import com.cwt.liaohs.bus.SdcardNotMounted;
 import com.cwt.liaohs.bus.StartRecord;
 import com.cwt.liaohs.bus.StopRecord;
 import com.cwt.liaohs.recorder.CrashGsensorManager;
-import com.cwt.liaohs.recorder.RecordManager;
+import com.cwt.liaohs.recorder.OnPicTakeListener;
 import com.cwt.liaohs.recorder.RecordSettings;
 import com.cwt.liaohs.recorder.RecordStorage;
+import com.cwt.liaohs.state.CameraErrorState;
 import com.cwt.liaohs.state.CrashState;
 import com.cwt.liaohs.state.DriveState;
 import com.cwt.liaohs.state.IdleState;
 import com.cwt.liaohs.state.RecordStateManager;
+import com.cwt.liaohs.state.WechatPicState;
+import com.cwt.liaohs.state.WechatVedioState;
 import com.squareup.otto.Subscribe;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.cwt.liaohs.cwtdvrplus.ContextUtil.BUS;
@@ -58,7 +56,7 @@ import static com.cwt.liaohs.cwtdvrplus.ContextUtil.BUS;
  * Created by liaohs on 2018/9/14.
  */
 
-public class DoubleRecordActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class DoubleRecordActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,OnPicTakeListener {
     private boolean mNeedGrantedPermission;
     public static final int REQUEST_CAMERA_PERMISSION = 1001;
 
@@ -79,9 +77,6 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
     private final int frontCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
     private final int backCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    private RecordManager backRecordManager;
-    private RecordManager frontRecordManager;
-
     private RecordStateManager backStateManager;
     private RecordStateManager frontStateManager;
 
@@ -89,8 +84,9 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
     private Handler mainHandler;
     private HandlerThread mHandlerThread;
 
-    TestBroadCast broadCast;
+    private final TestBroadCast broadCast = new TestBroadCast();
     private final SdcardReceiver sdcardReceiver = new SdcardReceiver();
+    private final WechatReceiver wechatReceiver = new WechatReceiver();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,7 +98,6 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         BUS.register(this);
 
         IntentFilter filter = new IntentFilter("com.cwt.test");
-        broadCast = new TestBroadCast();
         registerReceiver(broadCast,filter);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PERMISSION_GRANTED ||
@@ -126,22 +121,21 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
         if (Camera.getNumberOfCameras() == 2) {
-            if (frontRecordManager != null) {
-                frontRecordManager.stopPreview();
-                if(frontRecordManager.isRecording()){
+            if (frontStateManager != null) {
+                frontStateManager.getRecordManager().stopPreview();
+                if(frontStateManager.getRecordManager().isRecording()){
                     stopFrontRecord();
                 }
             }
         }
 
-        if (backRecordManager != null) {
-            backRecordManager.stopPreview();
-            if(backRecordManager.isRecording()){
+        if (backStateManager != null) {
+            backStateManager.getRecordManager().stopPreview();
+            if(backStateManager.getRecordManager().isRecording()){
                 stopBackRecord();
             }
         }
@@ -159,36 +153,24 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         super.onDestroy();
         BUS.unregister(this);
         unregisterReceiver(sdcardReceiver);
+        unregisterReceiver(wechatReceiver);
+        unregisterReceiver(broadCast);
 
-        if (frontRecordManager != null) {
-            frontRecordManager.stopPreview();
-            if(frontRecordManager.isRecording()){
+        if (frontStateManager != null) {
+            frontStateManager.getRecordManager().stopPreview();
+            if(frontStateManager.getRecordManager().isRecording()){
                 stopFrontRecord();
             }
-            frontRecordManager = null;
-        }
-
-        if (backRecordManager != null) {
-            backRecordManager.stopPreview();
-            if(backRecordManager.isRecording()){
-                stopBackRecord();
-            }
-            backRecordManager = null;
-        }
-
-        if(frontStateManager != null){
             frontStateManager = null;
         }
 
-        if(backStateManager != null){
+        if (backStateManager != null) {
+            backStateManager.getRecordManager().stopPreview();
+            if(backStateManager.getRecordManager().isRecording()){
+                stopBackRecord();
+            }
             backStateManager = null;
         }
-
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
-
     }
 
     private void goonWithPermissionGranted() {
@@ -212,28 +194,22 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         textureView_back.setSurfaceTextureListener(new BackSurfaceTextureListener());
         textureView_back.setOnClickListener(this);
 
-        RecordSettings.setFrontCrashed(false);
-        RecordSettings.setBackCrashed(false);
-        RecordSettings.setRecordInterval(CrashState.getPreRecordInterval());
-
         backStateManager = new RecordStateManager(backCameraId,textureView_back);
-        backRecordManager = backStateManager.getRecordManager();
         ContextUtil.getInstance().setRecordStateManager(backStateManager,false);
 
         if (textureView_back.isAvailable()) {
-            if(backRecordManager != null){
-                backRecordManager.startPreview();
+            if(backStateManager != null){
+                backStateManager.getRecordManager().startPreview();
             }
         }
 
         if (Camera.getNumberOfCameras() == 2) {
             frontStateManager = new RecordStateManager(frontCameraId,textureView_front);
-            frontRecordManager = frontStateManager.getRecordManager();
             ContextUtil.getInstance().setRecordStateManager(frontStateManager,true);
 
             if (textureView_front.isAvailable()) {
-                if(frontRecordManager != null){
-                    frontRecordManager.startPreview();
+                if(frontStateManager != null){
+                    frontStateManager.getRecordManager().startPreview();
                 }
             }
         }
@@ -251,12 +227,14 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         mHandlerThread = new HandlerThread("camera");
         mHandlerThread.start();
 
+        IntentFilter mediafilter = new IntentFilter();
+        mediafilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        mediafilter.addAction(Intent.ACTION_MEDIA_EJECT);
+        mediafilter.addDataScheme("file");
+        registerReceiver(sdcardReceiver,mediafilter);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-        filter.addAction(Intent.ACTION_MEDIA_EJECT);
-        filter.addDataScheme("file");
-        registerReceiver(sdcardReceiver,filter);
+        IntentFilter wechatfilter = new IntentFilter("com.spreadwin.camera.snapshot");
+        registerReceiver(wechatReceiver,wechatfilter);
 
         mHandler = new Handler(mHandlerThread.getLooper());
         mainHandler = new Handler();
@@ -270,28 +248,41 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
                         if(switch_camera.getVisibility() == View.VISIBLE){
                             if(frontStateManager == null){
                                 frontStateManager = new RecordStateManager(frontCameraId,textureView_front);
-                                frontRecordManager = frontStateManager.getRecordManager();
                                 ContextUtil.getInstance().setRecordStateManager(frontStateManager,true);
 
                                 if (textureView_front.isAvailable()) {
-                                    if(frontRecordManager != null){
-                                        frontRecordManager.startPreview();
+                                    if(frontStateManager != null){
+                                        frontStateManager.getRecordManager().startPreview();
                                     }
                                 }
+                                if(RecordSettings.isBackCrashedOn()){
+                                    return;
+                                }else if(RecordSettings.isBackWechatVedioOn()){
+                                    return;
+                                }else{
+                                    if(CameraErrorState.class.isInstance(frontStateManager.getCurState())){
+                                        return;
+                                    }else{
+                                        if(switch_record.isChecked()){
+                                            startFrontRecord();
+                                        }
+                                    }
 
-                                if(switch_record.isChecked()){
-                                    startFrontRecord();
                                 }
-
                             }
                         }else{
                             textureView_back.setVisibility(View.VISIBLE);
-                            if (frontRecordManager != null) {
-                                frontRecordManager.stopPreview();
-                                if(frontRecordManager.isRecording()){
+                            if (frontStateManager != null) {
+                                frontStateManager.getRecordManager().stopPreview();
+                                if(frontStateManager.getRecordManager().isRecording()){
                                     stopFrontRecord();
                                 }
-                                frontRecordManager = null;
+                                if(RecordSettings.isFrontCrashedOn()){
+                                    RecordSettings.setFrontCrashed(false);
+                                }
+                                if(RecordSettings.isFrontWechatVedioOn()){
+                                    RecordSettings.setFrontWechatVedio(false);
+                                }
                             }
                             frontStateManager = null;
                             ContextUtil.getInstance().setRecordStateManager(frontStateManager,true);
@@ -304,6 +295,7 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+
     private void switchCamera() {
         if (textureView_back.getVisibility() == View.VISIBLE) {
             textureView_back.setVisibility(View.INVISIBLE);
@@ -312,10 +304,9 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    private Camera mCamera;
     private long mLastPicTime = 0;
 
-    private void takePic() {
+    private void takePicTask() {
 
         if (System.currentTimeMillis() - mLastPicTime < 2000) {
             return;
@@ -326,98 +317,27 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
             return;
         }
 
-        if(backRecordManager != null){
-            if(backRecordManager.isRecording()){
+        if(backStateManager != null){
+            if(backStateManager.getRecordManager().isRecording()){
                 return;
             }
         }
 
-        if(frontRecordManager != null){
-            if(frontRecordManager.isRecording()){
+        if(frontStateManager != null){
+            if(frontStateManager.getRecordManager().isRecording()){
                 return;
             }
         }
 
         if (textureView_back.getVisibility() == View.VISIBLE) {
-            if (backRecordManager != null) {
-                mCamera = backRecordManager.mCamera;
+            if (backStateManager != null) {
+                backStateManager.getRecordManager().takePic(this);
             }
         } else {
-            if (frontRecordManager != null) {
-                mCamera = frontRecordManager.mCamera;
+            if (frontStateManager != null) {
+                frontStateManager.getRecordManager().takePic(this);
             }
         }
-
-        if (mCamera == null) {
-            return;
-        }
-
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-
-                if(camera != null){
-                    camera.startPreview();
-                }
-
-                if (data == null) {
-                    Log.e("cwt", "pic taken ,data is null!");
-                    return;
-                }
-
-                Bitmap bmp;
-                Bitmap scaledBitmap;
-                ByteArrayOutputStream bos;
-
-                bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                if (bmp == null) {
-                    Log.e("cwt", "pic taken, bitmap is null!");
-                    return;
-                }
-
-                scaledBitmap = Bitmap.createScaledBitmap(bmp, 800, 480, true);
-                bos = new ByteArrayOutputStream();
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, bos);
-
-                if (bos == null)
-                    return;
-
-                overlay(bos.toByteArray());
-
-                FileOutputStream out = null;
-
-                try {
-                    out = new FileOutputStream(new File(RecordStorage.getCurrentPicPath()));
-                    out.write(bos.toByteArray());
-                    out.flush();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.d("cwt", "takePic()-->e" + e.toString());
-                } finally {
-
-                    if (bmp != null) {
-                        bmp.recycle();
-                    }
-                    if (scaledBitmap != null) {
-                        scaledBitmap.recycle();
-                    }
-                    try {
-                        if (out != null) {
-                            out.close();
-                        }
-                        if (bos != null) {
-                            bos.close();
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-            }
-        });
 
         mLastPicTime = System.currentTimeMillis();
     }
@@ -475,11 +395,20 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
                         return;
                     }
 
-                    if(backRecordManager != null){
+                    if(RecordSettings.isBackWechatVedioOn()){
+                        return;
+                    }
+
+                    if(ContextUtil.getInstance().isDriveAfterWechatVedio){
+                        ContextUtil.getInstance().isDriveAfterWechatVedio = false;
+                        return;
+                    }
+
+                    if(backStateManager != null){
                         startBackRecord();
                     }
 
-                    if(frontRecordManager != null){
+                    if(frontStateManager != null){
                         startFrontRecord();
                     }
                     if(RecordStorage.isSdcardAvailable()){
@@ -490,12 +419,16 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
                         return;
                     }
 
+                    if(RecordSettings.isBackWechatVedioOn()){
+                        return;
+                    }
+
                     if (ContextUtil.getInstance().isRecording) {
-                        if(backRecordManager != null){
+                        if(backStateManager != null){
                             stopBackRecord();
                         }
 
-                        if(frontRecordManager != null){
+                        if(frontStateManager != null){
                             stopFrontRecord();
                         }
 
@@ -528,12 +461,19 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         new StopRecordAsyncTask(backStateManager,typeBack).execute();
     }
 
+    @Override
+    public void onPicTakeFinish(byte[] data) {
+        if(data != null){
+            overlay(data);
+        }
+    }
+
     class FrontSurfaceTextureListener implements TextureView.SurfaceTextureListener {
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-            if (frontRecordManager != null) {
-                frontRecordManager.startPreview();
+            if (frontStateManager != null) {
+                frontStateManager.getRecordManager().startPreview();
             }
         }
 
@@ -557,8 +497,8 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-            if (backRecordManager != null) {
-                backRecordManager.startPreview();
+            if (backStateManager != null) {
+                backStateManager.getRecordManager().startPreview();
             }
         }
 
@@ -578,7 +518,6 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-
     @Subscribe
     public void onStartRecord(StartRecord startRecord) {
         runOnUiThread(new Runnable() {
@@ -589,10 +528,18 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
                     switch_record.setClickable(false);
                 }
 
+                if(RecordSettings.isBackWechatVedioOn()){
+                    switch_record.setChecked(true);
+                    switch_record.setClickable(false);
+                }
+
                 if(ContextUtil.getInstance().isDriveAfterCrash){
                     switch_record.setChecked(true);
                 }
 
+                if(ContextUtil.getInstance().isDriveAfterWechatVedio){
+                    switch_record.setChecked(true);
+                }
 
                 textRecordTick.setVisibility(View.VISIBLE);
                 textRecordTick.removeCallbacks(mRecordTickRunnable);
@@ -607,6 +554,11 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void run() {
                 if(RecordSettings.isBackCrashedOn()){
+                    switch_record.setChecked(false);
+                    switch_record.setClickable(true);
+                }
+
+                if(RecordSettings.isBackWechatVedioOn()){
                     switch_record.setChecked(false);
                     switch_record.setClickable(true);
                 }
@@ -689,23 +641,25 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
                 switchCamera();
                 break;
             case R.id.tack_pic:
-                takePic();
+                takePicTask();
                 break;
             case R.id.vedio_setting:
                 if(RecordSettings.isFrontCrashedOn() || RecordSettings.isBackCrashedOn()){
                     Toast.makeText(DoubleRecordActivity.this,"正在紧急录像，稍后再点击",Toast.LENGTH_SHORT).show();
+                }else if(RecordSettings.isFrontWechatVedioOn() || RecordSettings.isBackWechatVedioOn()){
+                    Toast.makeText(DoubleRecordActivity.this,"正在远程微视，稍后再点击",Toast.LENGTH_SHORT).show();
                 }else{
                     vedioSetting();
                 }
                 break;
             case R.id.textureview_front:
-                if (frontRecordManager != null) {
-                    frontRecordManager.autoFocus();
+                if (frontStateManager != null) {
+                    frontStateManager.getRecordManager().autoFocus();
                 }
                 break;
             case R.id.textureview_back:
-                if (backRecordManager != null) {
-                    backRecordManager.autoFocus();
+                if (backStateManager != null) {
+                    backStateManager.getRecordManager().autoFocus();
                 }
                 break;
         }
@@ -814,6 +768,68 @@ public class DoubleRecordActivity extends AppCompatActivity implements View.OnCl
 
         }
 
+    }
+
+    class WechatReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent == null){
+                return;
+            }
+
+            if(intent.getBooleanExtra("video", false)){
+                //vedio
+                if(RecordSettings.isBackCrashedOn()){
+                    Toast.makeText(DoubleRecordActivity.this,"正在紧急录像，请稍后再试。",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(frontStateManager != null){
+                            frontStateManager.changeToState(new WechatVedioState(frontStateManager,typeFront));
+                        }
+                    }
+                }).start();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(backStateManager != null){
+                            backStateManager.changeToState(new WechatVedioState(backStateManager,typeBack));
+                        }
+                    }
+                }).start();
+
+            }else{
+                //pic
+                if(!RecordStorage.isSdcardAvailable()){
+                    Toast.makeText(DoubleRecordActivity.this,"sdcard not mount!",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(frontStateManager != null){
+                            new WechatPicState(frontStateManager,typeFront).onStart();
+                        }
+                    }
+                }).start();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(backStateManager != null){
+                            new WechatPicState(backStateManager,typeBack).onStart();
+                        }
+                    }
+                }).start();
+
+            }
+        }
     }
 
 

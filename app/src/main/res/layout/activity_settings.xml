@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="设置"
+            android:text="@string/settings"
             android:textColor="#ffff"
             android:textSize="16sp" />
 
@@ -56,7 +56,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="行车事故记录"
+                    android:text="@string/traffic_record"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -86,7 +86,7 @@
                             android:id="@+id/tip"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Tips:为了您的行车安全，建议你长期开启此功能。"
+                            android:text="@string/traffic_tip"
                             android:textColor="#ff282d30"
                             android:textSize="16sp"
                             android:gravity="left|center_vertical"
@@ -116,7 +116,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="双录设置"
+                    android:text="@string/double_record_settings"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -144,7 +144,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="仅前录"
+                            android:text="@string/front_record_only"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
 
@@ -154,7 +154,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="同时录"
+                            android:text="@string/double_record"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                     </RadioGroup>
@@ -176,7 +176,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="录像时间设置"
+                    android:text="@string/record_interval_setting"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -204,7 +204,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="1分钟"
+                            android:text="@string/interval_1_min"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -213,7 +213,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="2分钟"
+                            android:text="@string/interval_2_min"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -222,7 +222,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="5分钟"
+                            android:text="@string/interval_5_min"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                     </RadioGroup>
@@ -247,7 +247,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="视频比特率设置"
+                    android:text="@string/vedio_bit_rate_setting"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -274,7 +274,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="低"
+                            android:text="@string/bit_rate_low"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -283,7 +283,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="中"
+                            android:text="@string/bit_rate_mid"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -292,7 +292,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="高"
+                            android:text="@string/bit_rate_high"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                     </RadioGroup>
@@ -315,7 +315,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="视频质量设置"
+                    android:text="@string/vedio_quality_setting"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -342,7 +342,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="720p"
+                            android:text="@string/vedio_quality_720p"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
 
@@ -352,7 +352,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="1080p"
+                            android:text="@string/vedio_quality_1080p"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                     </RadioGroup>
@@ -375,7 +375,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="碰撞检测灵敏度"
+                    android:text="@string/crash_sense_setting"
                     android:textColor="#ff282d30"
                     android:textSize="30dp" />
                 <View
@@ -402,7 +402,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="低"
+                            android:text="@string/crash_sense_low"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -411,7 +411,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="中"
+                            android:text="@string/crash_sense_mid"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                         <RadioButton
@@ -420,7 +420,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="15dp"
                             android:paddingLeft="10dp"
-                            android:text="高"
+                            android:text="@string/crash_sense_high"
                             android:textColor="#ff1b1b1b"
                             android:textSize="18sp" />
                     </RadioGroup>

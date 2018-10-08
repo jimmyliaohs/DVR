@@ -2,7 +2,6 @@ package com.cwt.liaohs.recorder;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.cwt.liaohs.cwtdvrplus.ContextUtil;
 
@@ -105,5 +104,21 @@ public class RecordSettings {
 
     public static boolean isQuality720p(){
         return getBoolean("is_quality_720p", true);
+    }
+
+    public static boolean isFrontWechatVedioOn(){
+        return getBoolean("is_front_wechat_vedio", false);
+    }
+
+    public static void setFrontWechatVedio(boolean value){
+        setValue("is_front_wechat_vedio", value);
+    }
+
+    public static boolean isBackWechatVedioOn(){
+        return getBoolean("is_back_wechat_vedio", false);
+    }
+
+    public static void setBackWechatVedio(boolean value){
+        setValue("is_back_wechat_vedio", value);
     }
 }

@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">cwtDvrPlus</string>
+
+    <!--double_record-->
+    <string name="save_pic">照片存储中...</string>
+    <string name="record_time">00:00</string>
+    <!--settings-->
+    <string name="settings">设置</string>
+    <string name="traffic_record">行车事故记录</string>
+    <string name="traffic_tip">Tips:为了您的行车安全，建议你长期开启此功能。</string>
+    <string name="double_record_settings">双录设置</string>
+    <string name="front_record_only">仅前录</string>
+    <string name="double_record">同时录</string>
+    <string name="record_interval_setting">录像时间设置</string>
+    <string name="interval_1_min">1分钟</string>
+    <string name="interval_2_min">2分钟</string>
+    <string name="interval_5_min">5分钟</string>
+    <string name="vedio_bit_rate_setting">视频比特率设置</string>
+    <string name="bit_rate_low">低</string>
+    <string name="bit_rate_mid">中</string>
+    <string name="bit_rate_high">高</string>
+    <string name="vedio_quality_setting">视频比特率设置</string>
+    <string name="vedio_quality_720p">720p</string>
+    <string name="vedio_quality_1080p">1080p</string>
+    <string name="crash_sense_setting">碰撞检测灵敏度</string>
+    <string name="crash_sense_low">低</string>
+    <string name="crash_sense_mid">中</string>
+    <string name="crash_sense_high">高</string>
 </resources>
